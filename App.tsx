@@ -5,29 +5,51 @@
  * @format
  */
 
-import React, { useEffect } from 'react';
-import { SafeAreaView, Button, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import Hello from 'components/Hello';
+import Calendar from 'components/Calendar';
+import { appendPeriod } from 'utilities/calendarHelpers';
 
 function App(): JSX.Element {
+  const [startDate, setStartDate] = useState<string>();
+  const [endDate, setEndDate] = useState<string>();
+  const [editMode, setEditMode] = useState(false);
+  const [periodLog, setPeriodLog] = useState<DateTypes.Log>({
+    avgCycle: 28,
+    avgDuration: 5,
+    periods: [],
+  });
+
+  console.log(periodLog);
+
   useEffect(() => {
-    AsyncStorage.getItem('name').then((res) => Alert.alert(`Data is: ${res}`));
+    AsyncStorage.getItem('name');
   }, []);
 
   return (
     <SafeAreaView>
-      <Hello
-        hello="hello"
-        bello="bello"
-        trello="trello"
-        hehe="heheh"
-        fkchdgskvjh="dikufvhdskjvh"
+      <Calendar
+        editMode={editMode}
+        selectionStartDate={startDate}
+        selectionEndDate={endDate}
+        setSelectionStartDate={setStartDate}
+        setSelectionEndDate={setEndDate}
+        perdiodLog={periodLog}
       />
       <Button
-        title="Write stuff to local storage"
-        onPress={() => AsyncStorage.setItem('name', 'Hoo Haa')}
+        title={editMode ? 'Save' : 'Enter Dates'}
+        onPress={() => {
+          if (editMode) {
+            setEditMode(false);
+            startDate &&
+              setPeriodLog(appendPeriod(periodLog, startDate, endDate));
+          } else {
+            setEditMode(true);
+            setStartDate(undefined);
+            setEndDate(undefined);
+          }
+        }}
       />
     </SafeAreaView>
   );
