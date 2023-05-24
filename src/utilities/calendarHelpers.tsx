@@ -95,9 +95,76 @@ export const appendPeriod = (
   endDate?: string,
 ): DateTypes.Log => {
   const temp = { ...log };
+  if (detectOverlap(log, startDate, endDate)) {
+    return temp;
+  }
   log.periods.push({
     startDate,
     endDate,
   });
+  log.periods.sort((a, b) => (a.startDate > b.startDate ? 1 : -1));
+  const { avgCycle, avgDuration } = getAvgCycleAndDuration(log);
+  temp.avgCycle = avgCycle;
+  temp.avgDuration = avgDuration;
   return temp;
+};
+
+/**
+ * functon to return average duration and cycle on the basis of log provided
+ * @param log DateTypes.Log
+ * @return { avgCycle, avgDuration }
+ */
+export const getAvgCycleAndDuration = (
+  log: DateTypes.Log,
+): { avgCycle: number; avgDuration: number } => {
+  let avgCycle = 0;
+  let avgDuration = 0;
+  log.periods.forEach((period, i) => {
+    if (i > 0) {
+      avgCycle += moment(period.startDate).diff(
+        moment(log.periods[i - 1].startDate),
+        'days',
+      );
+    }
+    avgDuration += moment(period.endDate).diff(
+      moment(period.startDate),
+      'days',
+    );
+  });
+  if (log.periods.length) {
+    avgDuration /= log.periods.length;
+  }
+  if (log.periods.length > 1) {
+    avgCycle /= log.periods.length - 1;
+  }
+  if (avgCycle < 20 || avgCycle > 35) {
+    avgCycle = 28;
+  }
+  return { avgCycle, avgDuration };
+};
+
+export const detectOverlap = (
+  log: DateTypes.Log,
+  startDate: string,
+  endData?: string,
+): boolean => {
+  let invalid = false;
+  const overlap = log.periods.find(
+    (period) =>
+      (startDate >= period.startDate &&
+        period.endDate &&
+        startDate <= period.endDate) ||
+      (endData &&
+        endData >= period.startDate &&
+        period.endDate &&
+        endData <= period.endDate) ||
+      (endData &&
+        startDate <= period.startDate &&
+        period.endDate &&
+        endData >= period.endDate),
+  );
+  if (overlap) {
+    invalid = true;
+  }
+  return invalid;
 };
