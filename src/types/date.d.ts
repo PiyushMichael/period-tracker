@@ -1,5 +1,5 @@
 declare namespace DateTypes {
-  type Period = {
+  type CalendarPeriod = {
     [key: string]: {
       startingDay?: boolean;
       endingDay?: boolean;
@@ -11,9 +11,16 @@ declare namespace DateTypes {
   type Log = {
     avgCycle: number;
     avgDuration: number;
-    periods: {
-      startDate: string;
-      endDate?: string;
-    }[];
+    periods: Entry[];
+  };
+
+  type Entry = {
+    startDate: string;
+    endDate?: string;
+  };
+
+  type MonthYear = {
+    month: number;
+    year: number;
   };
 }

@@ -8,6 +8,7 @@
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView, Button } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import moment from 'moment';
 import Calendar from 'components/Calendar';
 import { appendPeriod } from 'utilities/calendarHelpers';
 
@@ -20,8 +21,10 @@ function App(): JSX.Element {
     avgDuration: 5,
     periods: [],
   });
-
-  console.log(periodLog);
+  const [monthYear, setMonthYear] = useState<DateTypes.MonthYear>({
+    month: +moment().format('M'),
+    year: +moment().format('Y'),
+  });
 
   useEffect(() => {
     AsyncStorage.getItem('name');
@@ -36,6 +39,8 @@ function App(): JSX.Element {
         setSelectionStartDate={setStartDate}
         setSelectionEndDate={setEndDate}
         perdiodLog={periodLog}
+        monthYear={monthYear}
+        onMonthChange={setMonthYear}
       />
       <Button
         title={editMode ? 'Save' : 'Enter Dates'}

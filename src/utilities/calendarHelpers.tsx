@@ -10,7 +10,7 @@ export const getMarkedPeriod = (
   startDate?: string,
   endDate?: string,
   color?: string,
-): DateTypes.Period => {
+): DateTypes.CalendarPeriod => {
   if (!startDate) {
     return {};
   }
@@ -19,7 +19,7 @@ export const getMarkedPeriod = (
       [startDate]: { color: color || '#50cebb', textColor: 'black' },
     };
   }
-  const markObj: DateTypes.Period = {
+  const markObj: DateTypes.CalendarPeriod = {
     [startDate]: {
       startingDay: true,
       color: color || '#50cebb',
@@ -71,14 +71,22 @@ export const getMarkedDate = (
 
 export const getPeriodCalendar = (
   periodLog: DateTypes.Log,
-): DateTypes.Period => {
+  monthYear: DateTypes.MonthYear,
+): DateTypes.CalendarPeriod => {
+  const bracket = get3MonthBracket(monthYear);
   let calendarObj = {};
-  periodLog.periods.forEach((prd) => {
-    calendarObj = {
-      ...calendarObj,
-      ...getMarkedPeriod(prd.startDate, prd.endDate, '#ff7961'),
-    };
-  });
+  periodLog.periods
+    .filter(
+      (p) =>
+        p.startDate <= bracket.end &&
+        (p.endDate || p.startDate) >= bracket.start,
+    )
+    .forEach((prd) => {
+      calendarObj = {
+        ...calendarObj,
+        ...getMarkedPeriod(prd.startDate, prd.endDate, '#ff7961'),
+      };
+    });
   return calendarObj;
 };
 
@@ -167,4 +175,20 @@ export const detectOverlap = (
     invalid = true;
   }
   return invalid;
+};
+
+/**
+ * function to return starting date and ending date of 1 month before and after given month year
+ * @param monthYear
+ * @returns { start, end }
+ */
+export const get3MonthBracket = (
+  monthYear: DateTypes.MonthYear,
+): { start: string; end: string } => {
+  const monthString = `0${monthYear.month}`.slice(-2);
+  const m = moment(`${monthYear.year}-${monthString}-01`);
+  return {
+    start: m.subtract(1, 'months').format('YYYY-MM-DD'),
+    end: m.add(3, 'months').subtract(1, 'days').format('YYYY-MM-DD'),
+  };
 };

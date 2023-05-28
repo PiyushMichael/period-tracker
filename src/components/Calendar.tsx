@@ -9,6 +9,8 @@ const CalendarSleeve = ({
   setSelectionStartDate,
   setSelectionEndDate,
   perdiodLog,
+  monthYear,
+  onMonthChange,
 }: {
   editMode: boolean;
   selectionStartDate?: string;
@@ -16,6 +18,8 @@ const CalendarSleeve = ({
   setSelectionStartDate?: (val?: string) => void;
   setSelectionEndDate?: (val?: string) => void;
   perdiodLog: DateTypes.Log;
+  monthYear: DateTypes.MonthYear;
+  onMonthChange: (val: DateTypes.MonthYear) => void;
 }) => (
   <Calendar
     onDayPress={(day) => {
@@ -27,14 +31,12 @@ const CalendarSleeve = ({
         }
       }
     }}
-    onMonthChange={(month) => {
-      console.log('selected month', month);
-    }}
+    onMonthChange={(m) => onMonthChange({ month: m.month, year: m.year })}
     markingType="period"
     markedDates={
       editMode
         ? getMarkedPeriod(selectionStartDate, selectionEndDate)
-        : getPeriodCalendar(perdiodLog)
+        : getPeriodCalendar(perdiodLog, monthYear)
     }
   />
 );
