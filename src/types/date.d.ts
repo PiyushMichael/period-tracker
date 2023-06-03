@@ -10,13 +10,7 @@ declare namespace DateTypes {
 
   type Log = {
     avgCycle: number;
-    avgDuration: number;
-    periods: Entry[];
-  };
-
-  type Entry = {
-    startDate: string;
-    endDate?: string;
+    periods: string[];
   };
 
   type MonthYear = {

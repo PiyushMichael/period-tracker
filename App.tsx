@@ -13,12 +13,10 @@ import Calendar from 'components/Calendar';
 import { appendPeriod } from 'utilities/calendarHelpers';
 
 function App(): JSX.Element {
-  const [startDate, setStartDate] = useState<string>();
-  const [endDate, setEndDate] = useState<string>();
+  const [editDate, setEditDate] = useState<string>();
   const [editMode, setEditMode] = useState(false);
   const [periodLog, setPeriodLog] = useState<DateTypes.Log>({
     avgCycle: 28,
-    avgDuration: 5,
     periods: [],
   });
   const [monthYear, setMonthYear] = useState<DateTypes.MonthYear>({
@@ -34,10 +32,8 @@ function App(): JSX.Element {
     <SafeAreaView>
       <Calendar
         editMode={editMode}
-        selectionStartDate={startDate}
-        selectionEndDate={endDate}
-        setSelectionStartDate={setStartDate}
-        setSelectionEndDate={setEndDate}
+        editDate={editDate}
+        setEditDate={setEditDate}
         perdiodLog={periodLog}
         monthYear={monthYear}
         onMonthChange={setMonthYear}
@@ -47,12 +43,10 @@ function App(): JSX.Element {
         onPress={() => {
           if (editMode) {
             setEditMode(false);
-            startDate &&
-              setPeriodLog(appendPeriod(periodLog, startDate, endDate));
+            editDate && setPeriodLog(appendPeriod(periodLog, editDate));
           } else {
             setEditMode(true);
-            setStartDate(undefined);
-            setEndDate(undefined);
+            setEditDate(undefined);
           }
         }}
       />

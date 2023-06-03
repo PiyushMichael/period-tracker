@@ -1,22 +1,19 @@
 import React from 'react';
+import { Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import { getMarkedPeriod, getPeriodCalendar } from 'utilities/calendarHelpers';
 
 const CalendarSleeve = ({
   editMode,
-  selectionStartDate,
-  selectionEndDate,
-  setSelectionStartDate,
-  setSelectionEndDate,
+  editDate: editDate,
+  setEditDate: setEditDate,
   perdiodLog,
   monthYear,
   onMonthChange,
 }: {
   editMode: boolean;
-  selectionStartDate?: string;
-  selectionEndDate?: string;
-  setSelectionStartDate?: (val?: string) => void;
-  setSelectionEndDate?: (val?: string) => void;
+  editDate?: string;
+  setEditDate?: (val?: string) => void;
   perdiodLog: DateTypes.Log;
   monthYear: DateTypes.MonthYear;
   onMonthChange: (val: DateTypes.MonthYear) => void;
@@ -24,18 +21,20 @@ const CalendarSleeve = ({
   <Calendar
     onDayPress={(day) => {
       if (editMode) {
-        if (selectionStartDate && day.dateString > selectionStartDate) {
-          setSelectionEndDate && setSelectionEndDate(day.dateString);
-        } else {
-          setSelectionStartDate && setSelectionStartDate(day.dateString);
-        }
+        setEditDate && setEditDate(day.dateString);
       }
+    }}
+    onDayLongPress={(day) => {
+      Alert.alert('Delete this date?', `Delete ${day.dateString}?`, [
+        { text: 'ok', onPress: () => console.log('pressed') },
+        { text: 'cancel' },
+      ]);
     }}
     onMonthChange={(m) => onMonthChange({ month: m.month, year: m.year })}
     markingType="period"
     markedDates={
       editMode
-        ? getMarkedPeriod(selectionStartDate, selectionEndDate)
+        ? getMarkedPeriod(editDate)
         : getPeriodCalendar(perdiodLog, monthYear)
     }
   />
